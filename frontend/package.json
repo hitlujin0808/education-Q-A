@@ -1,0 +1,31 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Web frontend for K-11 RAG Chatbot, provides chat-like experience via Vue 3 and Element Plus.",
+  "author": "tiandilai <your-email@example.com>",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "serve": "vite preview",
+    "build": "vite build",
+    "lint": "eslint . --ext .js,.vue,.ts",
+    "format": "prettier --write \"src/**/*.{js,ts,vue,json,css,scss,md}\""
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "dependences": "^0.0.1-security",
+    "element-plus": "^2.6.3",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.26.0",
+    "prettier": "^3.2.5",
+    "vite": "^4.5.0"
+  }
+}

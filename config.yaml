@@ -1,0 +1,4 @@
+# config.yaml
+openai_api_key: ""   # 请替换为你的 OpenAI API Key
+data_path: "edu_docs"                            # 数据资料存放目录，例如包含TXT/PDF等文档的文件夹
+persistence_path: "vector_k11"                  # RAG系统索引及其他变量的持久化存储路径
