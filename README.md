@@ -1,52 +1,52 @@
-# Flask RAG API 接口文档
+# Flask RAG API Interface Documentation
 
-本API基于 Flask 提供，后端使用 RAG（检索增强生成）技术，实现基于 **K-11 教育领域** 知识的智能问答。
-
----
-
-## 💡 项目简介
-
-项目是基于 LlamaIndex 和 LangChain 构建的 RAG 应用，专为 **K-11教育领域** 设计。它能够对存放于 `edu_docs/` 文件夹中的学科资料（如PDF、TXT等教材、教辅文档）进行检索，并通过外部知识增强大模型（如OpenAI GPT系列）生成针对学生问题的精准回答和辅导。
-
-**主要技术栈**：
-
-- RAG实现: `LlamaIndex`、`LangChain`
-- 后端框架: `Flask`
-- 前端框架: `Vue` + `ElementUI Pro` (示例，本项目API文档主要关注后端)
+This API is delivered via Flask, with the backend employing RAG (Retrieval-Augmented Generation) technology to deliver intelligent question-answering based on knowledge within the **K-11 education sector**.
 
 ---
 
-## 🌲 项目结构说明
+## 💡 Project Summary
+
+This project is a RAG application built upon LlamaIndex and LangChain, specifically designed for the **K-11 education sector**. It retrieves subject-specific materials (such as PDFs, TXT files, textbooks, and supplementary teaching documents) stored within the `edu_docs/` folder, and generates precise answers and guidance for student queries through external knowledge-enhanced large language models (such as the OpenAI GPT series).
+
+**Primary Technology Stack**：
+
+- RAG implementation: `LlamaIndex`、`LangChain`
+- Backend framework: `Flask`
+- Front-end framework: `Vue` + `ElementUI Pro` (Example: This project's API documentation primarily focuses on the backend.)
+
+---
+
+## 🌲 Project Structure Description
 
 ```
 .
-├── flask_rag_api.py          # Flask 后端 API 主程序
-├── rag_system.py             # RAG 核心实现逻辑
-├── rag_langchain_chat.py     # LangChain 对话功能集成
-├── edu_docs                  # 存放用于构建K-11教育知识库的文档数据 (例如：教材PDF)
-└── vector_k11                # 向量索引持久化存储路径
+├── flask_rag_api.py          # Flask Backend API Main Programme
+├── rag_system.py             # RAG Core Implementation Logic
+├── rag_langchain_chat.py     # LangChain Conversation Function Integration
+├── edu_docs                  # Store document data used to build the K-11 educational knowledge base (e.g., teaching materials in PDF format)
+└── vector_k11                # Vector Index Persistent Storage Path
 ```
 *Note: `edu_docs` and `vector_k11` are the default directories used by the RAG system.*
 
 ---
 
-## 🚀 环境依赖及启动方式
+## 🚀 Environment dependencies and startup methods
 
-### 安装依赖
+### Install dependencies
 
 ```bash
 pip install flask llama-index langchain openai werkzeug
-# 如果使用 .env 文件管理 OpenAI API Key，还需安装 python-dotenv
+# If using a .env file to manage your OpenAI API Key, you will also need to install python-dotenv.
 pip install python-dotenv
 ```
 
-### 启动服务（开发模式）
+### Start Service (Development Mode)
 
 ```bash
 python flask_rag_api.py
 ```
 
-默认启动地址为：
+The default launch address is
 
 ```
 http://127.0.0.1:5005
@@ -54,68 +54,68 @@ http://127.0.0.1:5005
 
 ---
 
-## 📖 接口详细说明
+## 📖 Interface Specification
 
-本项目当前提供以下核心接口：
+This project currently provides the following core interfaces
 
-| 功能                   | 接口路径             | 方法  | 描述                                       |
-|-----------------------|---------------------|------|--------------------------------------------|
-| 检索增强问答（多轮） | `/api/chat`         | POST | 基于会话的智能问答，支持多轮对话         |
-| RAG文档检索接口       | `/retrieve`         | POST | 根据查询语句检索相关文档片段             |
-| 用户名密码注册        | `/api/auth/register`| POST | 用户使用用户名和密码进行注册             |
-| 用户名密码登录        | `/api/auth/login`   | POST | 用户使用用户名和密码进行登录             |
-| Apple登录认证        | `/api/auth/apple`   | POST | （示例）处理Apple Sign-In的身份验证回调 |
+| Function                                           | Interface Path      | Method| Description                                                                               |
+|----------------------------------------------------|---------------------|-------|-------------------------------------------------------------------------------------------|
+| Retrieval-Enhanced Question-Answering (Multi-Turn) | `/api/chat`         | POST  | Conversation-based intelligent question-answering, supporting multi-turn dialogue         |
+| RAG Document Retrieval Interface                   | `/retrieve`         | POST  | Retrieve relevant document fragments based on the query statement                         |
+| Username Password Register                         | `/api/auth/register`| POST  | Users register using their username and password                                          |
+| Username and Password Login                        | `/api/auth/login`   | POST  | Users log in using their username and password                                            |
+| Apple Sign-In Authentication                       | `/api/auth/apple`   | POST  | (Example) Handling Apple Sign-In authentication callbacks                                 |
 
 ---
 
-### 📌 接口一：检索增强多轮对话 (`/api/chat`)
+### 📌 Interface One: Retrieval-Enhanced Multi-Turn Dialogue (`/api/chat`)
 
-**接口描述**：
+**Interface Description**：
 
-基于会话的智能问答接口，支持多轮对话，自动管理上下文。主要用于K-11学生的学习提问。
+A conversation-based intelligent question-answering interface supporting multi-turn dialogue with automatic context management. Primarily designed for academic enquiries by pupils in K-11。
 
-**请求方式**：
+**Request method**：
 
 ```http
 POST /api/chat
 Content-Type: application/json
 ```
 
-**请求参数**：
+**Request parameters**：
 
-| 参数              | 类型     | 必须 | 说明                 | 示例                                  |
+| Parameters       | Type     | Must | Note                 |Example                                  |
 |------------------|----------|------|----------------------|---------------------------------------|
-| conversation_id  | string   | 是   | 会话唯一标识，用于维持对话上下文 | `"student_session_001"`                 |
-| message          | string   | 是   | 用户当前轮次提问内容 | `"什么是牛顿第一定律？"`                  |
+| conversation_id  | string   | yes  | Session identifier, used to maintain dialogue context | `"student_session_001"`                 |
+| message          | string   | yes  | User's current round query | `"What is Newton's First Law?"`                  |
 
-**请求示例**：
+**Request example**：
 
 ```json
 {
     "conversation_id": "student_session_001",
-    "message": "请解释一下什么是光合作用。"
+    "message": "Please explain what photosynthesis is."
 }
 ```
 
-**返回数据**：
+**Return data**：
 
-| 参数             | 类型     | 说明                   |
+| Parameters      | Type     | Note                   |
 |-----------------|----------|------------------------|
-| conversation_id | string   | 返回的会话标识，与请求一致 |
-| answer          | string   | 模型生成的回答内容       |
+| conversation_id | string   | The returned session identifier matches the request |
+| answer          | string   | Model-generated response conten       |
 
-**成功响应示例**：
+**Example of Successful Response**：
 
 ```json
 {
     "conversation_id": "student_session_001",
-    "answer": "光合作用是植物、藻类和某些细菌利用光能，将二氧化碳和水转化为富能有机物（如葡萄糖），并释放氧气的过程。这个过程主要发生在植物叶片的叶绿体中。"
+    "answer": "Photosynthesis is the process by which plants, algae, and certain bacteria utilise light energy to convert carbon dioxide and water into energy-rich organic compounds (such as glucose), whilst releasing oxygen. This process primarily occurs within the chloroplasts of plant leaves."
 }
 ```
 
-**异常响应示例**：
+**Example of an abnormal response**：
 
-缺少参数时：
+In the absence of parameters：
 
 ```json
 {
@@ -125,52 +125,52 @@ Content-Type: application/json
 
 ---
 
-### 📌 接口二：文档内容检索 (`/retrieve`)
+### 📌 Interface 2: Document Content Retrieval (`/retrieve`)
 
-**接口描述**：
+**Interface Description**：
 
-根据用户输入的查询语句，使用RAG系统从K-11教育知识库中检索出最相关的文档内容片段。
+Based on the query entered by the user, the RAG system retrieves the most relevant document content snippets from the K-11 educational knowledge base.
 
-**请求方式**：
+**Request method**：
 
 ```http
 POST /retrieve
 Content-Type: application/json
 ```
 
-**请求参数**：
+**Request parameters**：
 
-| 参数              | 类型     | 必须 | 说明                      | 示例                                                  |
+|  Parameters      |  Type    | Must | Note                      | Example                                                  |
 |------------------|----------|------|---------------------------|-------------------------------------------------------|
-| query            | string   | 是   | 用户待检索的查询语句       | `"初中物理的力学主要有哪些知识点？"`                         |
-| similarity_top_k | int      | 否   | 返回最相关的结果数量（默认5） | `3`                                                   |
+| query            | string   | yes  | User query to be retrieved       | `"What are the main topics covered in mechanics within the junior secondary physics curriculum?"` |
+| similarity_top_k | int      | no   | Number of most relevant results returned (default: 5) | `3`                                                   |
 
-**请求示例**：
+**Request example**：
 
 ```json
 {
-    "query": "高中语文必修上册中《沁园春·长沙》的写作背景是什么？",
+    "query": "What is the background to the composition of “Qin Yuan Chun: Changsha” in the Compulsory Chinese Language Textbook for Senior Secondary School, Volume 1?",
     "similarity_top_k": 2
 }
 ```
 
-**返回数据**：
+**Return data**：
 
-| 参数    | 类型   | 说明                                   |
+| Parameters     | Type   | Note                                   |
 |--------|--------|----------------------------------------|
-| result | string | 检索到的最相关文档片段（带分数） |
+| result | string | The most relevant document fragments retrieved (with scores) |
 
-**成功响应示例**：
+**Successful Response Example**：
 
 ```json
 {
-    "result": "---------------------------------------------\nScore: 0.895\n《沁园春·长沙》是毛泽东于1925年晚秋，离开故乡韶山，去广州主持农民运动讲习所，途经长沙，重游橘子洲，感慨万千，用一阕词抒写了他当时对中华民族前途的乐观主义精神和以天下为己任的革命抱负。\n---------------------------------------------\n\n---------------------------------------------\nScore: 0.870\n写作背景：1925年，中国革命形势高涨。......毛泽东在长沙停留，重游橘子洲头，面对湘江秋景，回顾往昔，展望未来，写下了这首词。\n---------------------------------------------"
+    "result": "---------------------------------------------\nScore: 0.895\nQin Yuan Chun: Changsha In late autumn of 1925, Mao Zedong departed his native Shaoshan for Guangzhou to preside over the Peasants' Movement Institute. Passing through Changsha, he revisited Orange Isle, where profound emotion welled within him. Through this verse, he expressed his optimistic outlook on the future of the Chinese nation and his revolutionary aspiration to shoulder the destiny of the world.\n---------------------------------------------\n\n---------------------------------------------\nScore: 0.870\nWriting Background: In 1925, the revolutionary tide in China was surging high. ... Mao Zedong paused his journey in Changsha, revisited Orange Isle, and facing the autumn scenery of the Xiang River, he reflected on the past and contemplated the future, composing this poem.\n---------------------------------------------"
 }
 ```
 
-**异常响应示例**：
+**Example of an abnormal response**：
 
-缺少参数时：
+When parameters are missing：
 
 ```json
 {
@@ -180,24 +180,24 @@ Content-Type: application/json
 
 ---
 
-### 📌 接口三：用户名密码注册 (`/api/auth/register`)
+### 📌 Interface Three: Username and Password Registration (`/api/auth/register`)
 
-**接口描述**：
-允许用户通过提供用户名和密码来注册新账户。
+**Interface Description**：
+Allow users to register new accounts by providing a username and password.
 
-**请求方式**：
+**Request method**：
 ```http
 POST /api/auth/register
 Content-Type: application/json
 ```
 
-**请求参数**：
-| 参数     | 类型   | 必须 | 说明     | 示例         |
+**Request parameters**：
+| Parameters     | Type   | Must | Note     | Example         |
 |----------|--------|------|----------|--------------|
-| username | string | 是   | 用户名   | `"student01"` |
-| password | string | 是   | 密码     | `"pass123!"`  |
+| username | string | yes  | Username   | `"student01"` |
+| password | string | yes  | Password     | `"pass123!"`  |
 
-**请求示例**：
+**Request example**：
 ```json
 {
     "username": "student01",
@@ -205,7 +205,7 @@ Content-Type: application/json
 }
 ```
 
-**成功响应示例**：
+**Successful Response Example**：
 ```json
 {
     "success": true,
@@ -216,13 +216,13 @@ Content-Type: application/json
     }
 }
 ```
-**异常响应示例** (用户名已存在):
+**Anomaly Response Examples** (Username already exists):
 ```json
 {
     "error": "username already exists"
 }
 ```
-**异常响应示例** (缺少参数):
+**Example of an abnormal response** (Missing parameters):
 ```json
 {
     "error": "username and password are required"
@@ -231,24 +231,24 @@ Content-Type: application/json
 
 ---
 
-### 📌 接口四：用户名密码登录 (`/api/auth/login`)
+### 📌 Interface 4: Username and Password Login (`/api/auth/login`)
 
-**接口描述**：
-允许已注册用户通过用户名和密码登录。
+**Interface Description**：
+Registered users may log in using their username and password.
 
-**请求方式**：
+**Request method**：
 ```http
 POST /api/auth/login
 Content-Type: application/json
 ```
 
-**请求参数**：
-| 参数     | 类型   | 必须 | 说明     | 示例         |
+**Request parameters**：
+| Parameters     | Type   | Must | Note     | Example         |
 |----------|--------|------|----------|--------------|
-| username | string | 是   | 用户名   | `"student01"` |
-| password | string | 是   | 密码     | `"pass123!"`  |
+| username | string | yes   | Username   | `"student01"` |
+| password | string | yes   | Password     | `"pass123!"`  |
 
-**请求示例**：
+**Request example**：
 ```json
 {
     "username": "student01",
@@ -256,7 +256,7 @@ Content-Type: application/json
 }
 ```
 
-**成功响应示例**：
+**Successful Response Example**：
 ```json
 {
     "success": true,
@@ -267,7 +267,7 @@ Content-Type: application/json
     }
 }
 ```
-**异常响应示例** (用户不存在或密码错误):
+**Example of abnormal response** (User does not exist or password is incorrect):
 ```json
 {
     "error": "user not found" 
@@ -281,31 +281,31 @@ Content-Type: application/json
 
 ---
 
-### 📌 接口五：Apple 登录认证 (`/api/auth/apple`)
+### 📌 Interface 5: Apple Sign-In Authentication (`/api/auth/apple`)
 
-**接口描述**：
-（此为后端示例接口）处理来自 iOS 客户端通过 "Sign in with Apple" 方式登录时发送的 `identityToken`。后端应对此 `identityToken` 进行验证（例如与 Apple 服务器校验），并基于验证结果创建或获取用户信息，返回一个会话 token。
+**Interface Description**：
+(This is a backend example interface) Handles the `identityToken` sent when logging in via ‘Sign in with Apple’ from an iOS client. The backend should validate this `identityToken` (e.g., by verifying with Apple's servers) and, based on the validation result, create or retrieve user information, returning a session token.
 
-**请求方式**：
+**Request method**：
 ```http
 POST /api/auth/apple
 Content-Type: application/json
 ```
 
-**请求参数**：
-| 参数            | 类型   | 必须 | 说明                               | 示例 (Token是编造的)                                      |
+**Request parameters**：
+| Parameters      | Type   | Must | Note                               | Example (Token is fictitious)                                      |
 |-----------------|--------|------|------------------------------------|---------------------------------------------------------|
-| identity_token  | string | 是   | Apple提供的身份令牌                  | `"eyJraWQiOiJBSURPUEsxIiwiYWxnIjoiUlMyNTYifQ..."`         |
-| user_identifier | string | 否   | Apple提供的用户唯一标识 (可选传入) | `"001234.abc123def456ghi789.0123"`                      |
+| identity_token  | string | yes   | Identity token provided by Apple                  | `"eyJraWQiOiJBSURPUEsxIiwiYWxnIjoiUlMyNTYifQ..."`         |
+| user_identifier | string | no    | Apple-provided user identifier (optional input)   | `"001234.abc123def456ghi789.0123"`                      |
 
-**请求示例**：
+**Request example**：
 ```json
 {
     "identity_token": "eyJraWQiOiJBSURPUEsxIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLnlvdXItYXBwLWJ1bmRsZS1pZCIsImV4cCI6MTY3ODg4NjQwMCwiaWF0IjoxNjc4ODg2MzQwLCJzdWIiOiIwMDEyMzQuYWJjMTIzZGVmNDU2Z2hpNzg5LjAxMjMiLCJjX2hhc2giOiJLWU..." ,
     "user_identifier": "001234.abc123def456ghi789.0123"
 }
 ```
-**成功响应示例** (后端成功验证并签发会话token):
+**Successful Response Example** (The backend has successfully verified and issued the session token):
 ```json
 {
     "success": true,
@@ -316,43 +316,43 @@ Content-Type: application/json
     }
 }
 ```
-**异常响应示例** (缺少 `identity_token`):
+**Example of an abnormal response** (Lacking `identity_token`):
 ```json
 {
     "error": "missing identity_token"
 }
 ```
-*注意: 真实的Apple Token验证会更复杂，可能涉及公钥获取和JWT解码验证等步骤。此处的后端实现为简化版，仅作演示。*
+*Note: Authentic Apple Token verification is more complex and may involve steps such as public key acquisition and JWT decoding and validation. The backend implementation here is a simplified version for demonstration purposes only.*
 
 ---
 
-## 🛠️ 接口测试说明
+## 🛠️ Interface Testing Specification
 
-项目提供了单元测试文件，方便接口快速自测：
+The project provides unit test files to facilitate rapid self-testing of interfaces
 
-**测试文件路径**：  
+**Test file path**：  
 ```
 test_flask_rag_api.py
 ```
 
-运行测试：
+Operational testing：
 
 ```bash
 python test_flask_rag_api.py
 ```
-测试用例中也包含了针对K-11教育领域问题的示例。
+The test cases also include examples addressing issues within the K-11 education sector.
 
 ---
 
-## 🔑 OpenAI API Key 配置说明
+## 🔑 OpenAI API Key Configuration Guide
 
-项目使用OpenAI模型，需要设置环境变量：
+The project utilises OpenAI models and requires the configuration of environment variables：
 
 ```bash
-export OPENAI_API_KEY="你的真实OpenAI_API_KEY"
+export OPENAI_API_KEY="Your actual OpenAI API key"
 ```
 
-或者在项目根目录创建`.env`文件（需要 `python-dotenv`库）：
+Alternatively, create a `.env` file in the project root directory (requires the `python-dotenv` library)：
 
 ```dotenv
 OPENAI_API_KEY=你的真实OpenAI_API_KEY
@@ -360,24 +360,24 @@ OPENAI_API_KEY=你的真实OpenAI_API_KEY
 
 ---
 
-## 📚 推荐开发流程
+## 📚 Recommended Development Process
 
-1.  安装依赖。
-2.  配置OpenAI API Key环境变量或`.env`文件。
-3.  准备K-11教育相关的教材、教辅等数据文件到 `edu_docs/` 文件夹。
-4.  首次运行API会自动扫描 `edu_docs/` 目录并构建向量索引，存储于 `vector_k11/`。后续启动会直接加载已有索引。
-5.  后端开发调试阶段使用Postman、Insomnia等工具或 `test_flask_rag_api.py` 测试接口。
-6.  前端（如Vue应用）通过HTTP请求调用后端API，实现用户交互界面。
-7.  后端功能迭代后，更新或添加单元测试用例，确保功能无误。
-
----
-
-🚩 **注意事项**：
-
--   初次运行时由于文档量较大，构建索引可能需要较长时间，请耐心等待。
--   后续在 `edu_docs/` 目录中新增或修改文档后，通常需要手动删除持久化文件夹（如 `vector_k11`）中的旧索引并重启API服务，以便重新生成包含最新内容的索引。
--   推荐使用Docker或虚拟环境（如venv, conda）进行开发和部署，以简化环境管理和依赖隔离。
+1.  Install dependencies.
+2.  Configure the OpenAI API Key environment variable or `.env` file.
+3.  Prepare K-11 education-related teaching materials, supplementary resources, and other data files into the `edu_docs/` folder.
+4.  Upon initial API execution, the system will automatically scan the `edu_docs/` directory and construct a vector index, which is stored within `vector_k11/`. Subsequent launches will directly load the existing index.
+5.  During the backend development debugging phase, utilise tools such as Postman or Insomnia, or employ the `test_flask_rag_api.py` script to test the interfaces.
+6.  The front-end (such as a Vue application) invokes back-end APIs via HTTP requests to implement the user interface.
+7.  Following the iteration of backend functionality, update or add unit test cases to ensure the functionality is error-free.
 
 ---
 
-以上为本项目API的详细文档，后续新增功能或接口时请及时更新此文档，以确保团队高效协作开发。
+🚩 **Notes**：
+
+-   During the initial run, due to the substantial volume of documents, indexing may take a considerable amount of time. Please be patient.
+-   Following the creation or modification of documents within the `edu_docs/` directory, it is typically necessary to manually delete the outdated index from the persistent folder (such as `vector_k11`) and restart the API service. This ensures the index is   regenerated to incorporate the latest content.
+-   It is recommended to use Docker or virtual environments (such as venv or conda) for development and deployment to simplify environment management and ensure dependency isolation.
+
+---
+
+The above constitutes the comprehensive documentation for this project's API. Should any new features or interfaces be introduced subsequently, please ensure this documentation is promptly updated to facilitate efficient collaborative development within the team.
