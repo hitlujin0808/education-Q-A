@@ -355,7 +355,7 @@ export OPENAI_API_KEY="Your actual OpenAI API key"
 Alternatively, create a `.env` file in the project root directory (requires the `python-dotenv` library)：
 
 ```dotenv
-OPENAI_API_KEY=你的真实OpenAI_API_KEY
+OPENAI_API_KEY=Your truth OpenAI_API_KEY
 ```
 
 ---
